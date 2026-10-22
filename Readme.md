@@ -1,74 +1,107 @@
-# Lab: Black Box Testing
+# Step 1 Website/Feature Selection
 
-## Topics
+- Website: Autostraddle
+- URL: https://www.autostraddle.com/
+- Features: Sign In, View AF+ Article
 
-- Black-box testing
-- Equivalence partitioning
-- Decision table testing
-- State transition testing
+# Step 2 Equivalence Partitioning with Email in Sign in Form
 
-## Learning Objectives
+| Classification   | Partition             | Range or Condition  | Expected Result                     |
+| ---------------- | --------------------- | ------------------- | ----------------------------------- |
+| Email address | Invalid pattern | Invalid email pattern  | Display `Please enter a valid email address` |
+| Email address | Invalid email  | Unrecognized email | Display `Unrecognized email` |
+| Email address | Valid email | Recognized email | Check password |
 
-- Design black-box tests without viewing the application code.
-- Identify valid and invalid equivalence partitions.
-- Create decision tables from conditions and expected actions.
-- Identify application states, events, and transitions.
-- Create test cases using equivalence partitions, decision tables, and state transitions.
+# Step 3 Decision tables with Viewing AF+ Article
 
-# Deliverables
+### Conditions:
+- is Logged In
+- is AF+ Subscriber
 
-## Step 1: Select a Website
+### Actions:
+- Displays premium article
+- Displays invitation to subscribe
 
-Choose a website that you enjoy using.
+### Table:
 
-Include:
+| Conditions and Actions         | Rule 1 | Rule 2 | Rule 3 | Rule 4 | Rule 5 | Rule 6 |
+| ------------------------------ | :----: | :----: | :----: | :----: | :----: | :----: |
+| Is logged in                   |    T    |   F     |    T    |   F     |
+| Has an AF+ Subscription        |    T    |   T     |    F    |   F     |
+| **Displays premium article**   |    X    |        |        |        |
+| **Displays invitation to subscribe**   |        |    X    |   X     |    X    |
 
-- The website's name
-- The website's URL
-- One or two features you will test
+### Test Cases:
 
-Do not look at the website's source code.
+### TC01: Logged In and Subscriber
 
-## Step 2: Equivalence Partitioning
+- **isSignedIn:** True
+- **IsSubscriber:** True
+- **Expected Result:** Display full article
 
-Apply equivalence partitioning to one selected feature.
+### TC02: Logged Out and Subscriber
 
-Include:
+- **isSignedIn:** False
+- **IsSubscriber:** True
+- **Expected Result:** Display invitation to subscribe
 
-- Valid partitions
-- Invalid partitions
-- One representative value from each partition
-- The expected result for each value
+### TC03: Logged In and Not Subscriber
 
-## Step 3: Decision Table Testing
+- **isSignedIn:** True
+- **IsSubscriber:** False
+- **Expected Result:** Display invitation to subscribe
 
-Apply decision table testing to one selected feature.
+### TC04: Logged Out and Not Subscriber
 
-Include:
+- **isSignedIn:** False
+- **IsSubscriber:** False
+- **Expected Result:** Display invitation to subscribe
 
-- Conditions
-- Actions
-- A completed decision table
-- Test cases based on the table
+# Step 4 State Transition Testing on Sign In
 
-## Step 4: State Transition Testing
+### States:
+- Signed Out
+- Signed In
+- Warning
+- Temporarily Locked
 
-Apply state transition testing to one selected feature.
+### Events
+- Signing in Correctly
+- Signing in Incorrectly
+- Invalid password 4 times
+- Invalid password 5 times
 
-Include:
+### Valid transitions:
+- Signed Out -> Signed In (Signing in Correctly)
+- Signed Out -> Warning (Invalid password 4 times)
+- Warning -> Temporarily Locked (Invalid password 5 times)
 
-- States
-- Events
-- Valid and invalid transitions
-- A completed state transition table
-- Test cases based on the table
+### Invalid transition:
+- Signed Out -> Signed Out (Signing in Incorrectly)
 
-## What to Submit
+### Table
 
-1. Create and initialize a GitHub repository.
-2. Commit and push your work to the repository.
-3. Make sure the repository is public. Private repositories will not receive credit.
+| Current State | Event            | Expected State | Expected Result          |
+| ------------- | ---------------- | -------------- | ------------------------ |
+| Signed Out    | Correct Sign In  | Signed In      | Go to main page          |
+| Signed Out    | Incorrect Sign In | Signed Out    | Display correct error message |
+| Signed Out    | 4th Invalid Password | Warning    | Display Warning message  |
+| Signed Out    | 5th Invalid Password | Temporarily locked | Display Account Lock message |
 
-## AI Transparency
+### Test Cases
 
-AI was used to clean up this file.
+| Test ID | Step | Current State | Event            | Expected State | Expected Result    | Transition Type |
+| ---- | - | ------------- | ---------------- | -------------- | ------------------------ | --------------- |
+| ST01 | - | Signed Out    | Correct Sign In  | Signed In      | Go to main page          | Valid |
+| ST02 | - | Signed Out    | Incorrect Sign In | Signed Out    | Display correct error message | Invalid |
+| ST03 | 1 | Signed Out    | 1st Incorrect Password | Signed Out    | Display Incorrect Password message | Invalid |
+|  -   | 2 | Signed Out    | 2nd Incorrect Password | Signed Out | Display Incorrect Password message | Invalid |
+|  -   | 3 | Signed Out    | 3rd Incorrect Password | Signed Out | Display Incorrect Password message | Invalid |  
+|  -   | 4 | Signed Out    | 4th Incorrect Password | Warning | Display Warning message | Valid |    
+| ST04 | 1 | Signed Out    | 1st Invalid Password | Signed Out | Display Incorrect Password message | Invalid |
+|  -   | 2 | Signed Out    | 2nd Incorrect Password | Signed Out | Display Incorrect Password message | Invalid |  
+|  -   | 3 | Signed Out    | 3rd Incorrect Password | Signed Out | Display Incorrect Password message | Invalid |  
+|  -   | 4 | Signed Out    | 4th Incorrect Password | Warning | Display Warning message | Valid |  
+|  -   | 5 | Warning    | 5th Incorrect Password | Temporarily Locked | Display Account Locked message | Valid |  
+
+
